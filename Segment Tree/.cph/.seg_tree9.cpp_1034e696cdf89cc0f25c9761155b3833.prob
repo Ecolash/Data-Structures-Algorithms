@@ -1,0 +1,1 @@
+{"name":"Local: seg_tree9","url":"e:\\Codes\\Data Structures & Algorithms\\Segment Tree\\seg_tree9.cpp","tests":[{"id":1715578647748,"input":"5\n10 6 14 16 8\n0 1 2 0 1","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\Codes\\Data Structures & Algorithms\\Segment Tree\\seg_tree9.cpp","group":"local","local":true}

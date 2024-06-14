@@ -1,0 +1,283 @@
+struct Node
+{
+    int data;
+    Node *left;
+    Node *right;
+};
+
+Node *create(int data)
+{
+    Node *new = new Node();
+    new->data = data;
+    new->left = NULL;
+    new->right = NULL;
+    return new;
+}
+
+Node *InsertinBST(Node *root, int data)
+{
+    if (root == NULL)
+    {
+        root = NewNode(data);
+        return root;
+    }
+
+    else if (data <= root->data)
+    {
+        root->left = InsertinBST(root->left, data);
+    }
+
+    else if (data >= root->data)
+    {
+        root->right = InsertinBST(root->right, data);
+    }
+
+    return root;
+}
+
+int max_value(Node *root)
+{
+    Node *current = root;
+    if (current == NULL)
+        return -1;
+
+    while (current->right != NULL)
+    {
+        current = current->right;
+    }
+    return current->data;
+}
+
+int min_value(Node *root)
+{
+    Node *current = root;
+    if (current == NULL)
+        return -1;
+
+    while (current->left != NULL)
+    {
+        current = current->left;
+    }
+    return current->data;
+}
+
+int height(Node *root)
+{
+    if (root == NULL)
+    { // NOTE : For only one node height is 0
+        return -1;
+    }
+
+    int x = height(root->left);
+    int y = height(root->right);
+    return 1 + max(x, y);
+}
+
+int depth(Node *root, int data)
+{
+    int Depth = 0;
+    if (root == NULL)
+        return -1;
+
+    if (root->data == data)
+        return Depth;
+
+    if (data < root->data)
+        return depth(root->left, data) + 1;
+
+    else
+        return depth(root->right, data) + 1;
+}
+
+void preorderTraversal(Node *root)
+{
+    if (root == nullptr)
+        return;
+
+    cout << root->data << " ";
+    preorderTraversal(root->left);
+    preorderTraversal(root->right);
+}
+
+void InorderTraversal(Node *root)
+{
+    if (root == nullptr)
+        return;
+
+    InorderTraversal(root->left);
+    cout << root->data << " ";
+    InorderTraversal(root->right);
+}
+
+void PostorderTraversal(Node *root)
+{
+    if (root == nullptr)
+        return;
+
+    PostorderTraversal(root->left);
+    PostorderTraversal(root->right);
+    cout << root->data << " ";
+}
+
+-----------------------------------------------
+AVL TREES
+
+struct Node
+{
+    int data;
+    Node *left;
+    Node *right;
+    int height;
+};
+
+Node *min_node(Node *root)
+{
+    while (root->left != NULL)
+    {
+        root = root->left;
+    }
+    return root;
+}
+
+Node *NewNode(int data)
+{
+    Node *newNode = new Node();
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    newNode->height = 0;
+    return newNode;
+}
+
+int height(Node *root)
+{
+    if (root == NULL)
+        return -1;
+
+    int x = height(root->left);
+    int y = height(root->right);
+    return 1 + max(x, y);
+}
+
+int BF(Node *root)
+{
+    int lh, rh;
+    if (root == NULL)
+        return 0;
+
+    if (root->left == NULL)
+        lh = 0;
+    else
+        lh = 1 + root->left->height;
+
+    if (root->right == NULL)
+        rh = 0;
+    else
+        rh = 1 + root->right->height;
+    return rh - lh;
+}
+
+Node *rightRotate(Node *y)
+{
+    Node *x = y->left;
+    Node *T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = max(height(y->left), height(y->right)) + 1;
+    x->height = max(height(x->left), height(x->right)) + 1;
+    return x;
+}
+
+Node *leftRotate(Node *x)
+{
+    Node *y = x->right;
+    Node *T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
+    return y;
+}
+
+Node *solve(Node *node)
+{
+    if (node == NULL)
+        return node;
+
+    if ((BF(node) < -1))
+    {
+        if (BF(node->left) > 0)
+        {
+            node->left = leftRotate(node->left);
+        }
+        node = rightRotate(node);
+    }
+
+    else if ((BF(node) > 1))
+    {
+        if (BF(node->right) < 0)
+        {
+            node->right = rightRotate(node->right);
+        }
+        node = leftRotate(node);
+    }
+
+    node->height = 1 + max(height(node->left), height(node->right));
+    return node;
+}
+
+Node *Insert(Node *root, int data)
+{
+    if (root == NULL)
+    {
+        root = NewNode(data);
+        return solve(root);
+    }
+
+    else if (data <= root->data)
+        root->left = Insert(root->left, data);
+    else if (data >= root->data)
+        root->right = Insert(root->right, data);
+    root = solve(root);
+    return root;
+}
+
+Node *delete(Node *root, int data)
+{
+    if (root == NULL) return root;
+    else if (root->data > data) root->left = delete(root->left, data);
+    else if (root->data < data) root->right = delete(root->right, data);
+
+    else
+    {
+        if (root->left == NULL && root->right == NULL)
+        {
+            delete root;
+            root = NULL;
+        }
+        else if (root->left == NULL)
+        {
+            Node *temp = root;
+            root = root->right;
+            delete temp;
+        }
+        else if (root->right == NULL)
+        {
+            Node *temp = root;
+            root = root->left;
+            delete temp;
+        }
+        else
+        {
+            Node *temp = min_node(root->right);
+            root->data = temp->data;
+            root->right = delete(root->right, temp->data);
+        }
+    }
+    root = solve(root);
+    return root;
+}
