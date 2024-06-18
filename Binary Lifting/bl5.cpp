@@ -1,8 +1,11 @@
-// TREE PATH NODE AGGREGATES 
-// GCD AGGGREGATES (GCD OF PATHS)
-// BINARY LIFTING - 2
+// TREE PATH NODE AGGREGATES
+// PARTIAL SUM OF NODES 
+// BINARY LIFTING - 5
 
-// ? u v -> GCD of all nodes on path from u to v
+// Initially all nodes in the tree have value 0
+// + X U V -> add X to all nodes on path from U to V
+// Print values of nodes after Q updates
+
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -25,54 +28,57 @@ const int H = 20;
 int n, m, q;
 vl tree[N];
 ll par[N][H];
-ll GCD[N][H];
-ll depth[N]; 
+ll depth[N], val[N];
 
 void dfs(int u, int p, int d)
 {
     par[u][0] = p;
-    GCD[u][0] = u;
     depth[u] = d;
-    for (int i = 1; i < H; i++)
-    {
-        par[u][i] = par[par[u][i - 1]][i - 1];
-        GCD[u][i] = __gcd(GCD[u][i - 1], GCD[par[u][i - 1]][i - 1]);
-    }
+    for (int i = 1; i < H; i++) par[u][i] = par[par[u][i - 1]][i - 1];
     for (auto &x : tree[u]) if (x != p) dfs(x, u, d + 1);
 }
 
-ll GCDQuery(int u, int v)
+int lca(int u, int v)
 {
     if (depth[u] < depth[v]) swap(u, v);
-    ll ans = 0;
-    for (int i = H - 1; i >= 0; i--)
-    {
-        if (depth[u] - (1 << i) >= depth[v])
-        {
-            ans = __gcd(ans, GCD[u][i]);
-            u = par[u][i];
-        }
-    }
-    if (u == v) return ans = __gcd(ans, (ll)u);
+    for (int i = H - 1; i >= 0; i--) if (depth[u] - (1 << i) >= depth[v]) u = par[u][i];
+    if (u == v) return u;
     for (int i = H - 1; i >= 0; i--)
     {
         if (par[u][i] != par[v][i])
         {
-            ans = __gcd(ans, GCD[u][i]);
-            ans = __gcd(ans, GCD[v][i]);
             u = par[u][i];
             v = par[v][i];
         }
     }
-    ans = __gcd(ans, (ll)u);
-    ans = __gcd(ans, (ll)v);
-    ans = __gcd(ans, par[u][0]);
-    return ans;
+    return par[u][0];
+}
+
+// For [u , v] = [u, l] + [v, l) (include LCA once)
+// So -x will happen at LCA and parent of LCA
+
+void add(ll u, ll v, ll x)
+{
+    val[u] += x;
+    val[v] += x;
+    ll l = lca(u, v);
+    val[l] -= x;
+    val[par[l][0]] -= x;
+}
+
+void addUp(ll u, ll p)
+{
+    for (auto v : tree[u])
+    {
+        if (v == p) continue;
+        addUp(v, u);
+    }
+    val[p] += val[u];
 }
 
 void solve()
 {
-    int x, y;
+    int x, y, v;
     cin >> n;
 
     for (int i = 1; i <= n; i++) tree[i].clear();
@@ -88,9 +94,12 @@ void solve()
     cin >> q;
     while (q--)
     {
-        cin >> x >> y;
-        cout << GCDQuery(x, y) << endl;
+        cin >> x >> y >> v;
+        add(x, y, v);
     }
+    addUp(1, 0);
+    for (int i = 1; i <= n; i++) cout << val[i] << " ";
+    cout << endl;
 }
 
 signed main() {

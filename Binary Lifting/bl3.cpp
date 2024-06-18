@@ -1,8 +1,11 @@
 // TREE PATH NODE AGGREGATES 
-// GCD AGGGREGATES (GCD OF PATHS)
-// BINARY LIFTING - 2
+// BITWISE AGGGREGATES (AND / OR OF PATHS)
+// BINARY LIFTING - 3
 
-// ? u v -> GCD of all nodes on path from u to v
+// 1 u v -> AND of all nodes on path from u to v
+// 2 u v -> OR of all nodes on path from u to v
+
+// NOTE : For XOR, just take XOR of paths to u and v from root
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -25,54 +28,65 @@ const int H = 20;
 int n, m, q;
 vl tree[N];
 ll par[N][H];
-ll GCD[N][H];
+ll AND[N][H];
+ll OR[N][H];
 ll depth[N]; 
 
 void dfs(int u, int p, int d)
 {
     par[u][0] = p;
-    GCD[u][0] = u;
+    AND[u][0] = u;
+    OR[u][0] = u;
     depth[u] = d;
     for (int i = 1; i < H; i++)
     {
         par[u][i] = par[par[u][i - 1]][i - 1];
-        GCD[u][i] = __gcd(GCD[u][i - 1], GCD[par[u][i - 1]][i - 1]);
+        AND[u][i] = AND[u][i - 1] & AND[par[u][i - 1]][i - 1];
+        OR[u][i] = OR[u][i - 1] | OR[par[u][i - 1]][i - 1];
     }
     for (auto &x : tree[u]) if (x != p) dfs(x, u, d + 1);
 }
 
-ll GCDQuery(int u, int v)
+ll Query(int t, int u, int v)
 {
     if (depth[u] < depth[v]) swap(u, v);
-    ll ans = 0;
+    ll ans1 = ~0, ans2 = 0;
+
     for (int i = H - 1; i >= 0; i--)
     {
         if (depth[u] - (1 << i) >= depth[v])
         {
-            ans = __gcd(ans, GCD[u][i]);
+            ans1 = ans1 & AND[u][i];
+            ans2 = ans2 | OR[u][i];
             u = par[u][i];
         }
     }
-    if (u == v) return ans = __gcd(ans, (ll)u);
+    if (u == v)
+    {
+        ans1 = ans1 & (ll)u;
+        ans2 = ans2 | (ll)u;
+        ll ans = (t == 1)? ans1 : ans2;
+        return ans;
+    }
     for (int i = H - 1; i >= 0; i--)
     {
         if (par[u][i] != par[v][i])
         {
-            ans = __gcd(ans, GCD[u][i]);
-            ans = __gcd(ans, GCD[v][i]);
+            ans1 = ans1 & AND[u][i] & AND[v][i];
+            ans2 = ans2 | OR[u][i] | OR[v][i];
             u = par[u][i];
             v = par[v][i];
         }
     }
-    ans = __gcd(ans, (ll)u);
-    ans = __gcd(ans, (ll)v);
-    ans = __gcd(ans, par[u][0]);
+    ans1 = ans1 & u & v & par[u][0];
+    ans2 = ans2 | u | v | par[u][0];
+    ll ans = (t == 1) ? ans1 : ans2;
     return ans;
 }
 
 void solve()
 {
-    int x, y;
+    int x, y, t;
     cin >> n;
 
     for (int i = 1; i <= n; i++) tree[i].clear();
@@ -88,8 +102,8 @@ void solve()
     cin >> q;
     while (q--)
     {
-        cin >> x >> y;
-        cout << GCDQuery(x, y) << endl;
+        cin >> t >> x >> y;
+        cout << Query(t, x, y) << endl;
     }
 }
 
