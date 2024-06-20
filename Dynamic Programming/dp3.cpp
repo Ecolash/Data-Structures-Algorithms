@@ -3,39 +3,41 @@
 
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
-int min_coin(vector<int> &coins, int amount)
+const ll N = 1e6 + 5;
+ll DP[N];
+
+ll minimize(vector<ll> &coins, ll t)
 {
-    int n = coins.size();
-    int m = amount + 1;
-    vector<int> dp(m, INT_MAX);
+    ll n = coins.size();
+    sort(coins.begin(), coins.end());
 
-    dp[0] = 0;
-    for (int i = 1; i < m + 1; i++)
+    ll m = t + 1;
+    for (ll i = 0; i < m; i++) DP[i] = 1e9;
+
+    DP[0] = 0;
+    for (ll i = 1; i < m; i++)
     {
-        for (int j = 0; j < n; j++)
+        for (ll j = 0; j < n; j++)
         {
-            if (i >= coins[j])
-            {
-                dp[i] = min(dp[i], 1 + dp[i - coins[j]]);
-            }
+            if (i >= coins[j]) DP[i] = min(DP[i], 1 + DP[i - coins[j]]);
+            else break;
         }
+        // cout << DP[i] << " ";   
     }
-    if (dp[amount] != m)
-        return dp[amount];
 
+    if (DP[t] != 1e9) return DP[t];
     return -1;
 }
 
-int main()
+signed main()
 {
-    int n, t;
+    ll n, t;
     cin >> n >> t;
 
-    vector<int> coins(n);
-    for (int i = 0; i < n; i++)
-        cin >> coins[i];
-
-    cout << min_coin(coins, t);
+    vector<ll> coins(n);
+    for (ll i = 0; i < n; i++) cin >> coins[i];
+    cout << minimize(coins, t);
     return 0;
 }

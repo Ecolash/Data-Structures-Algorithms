@@ -1,6 +1,7 @@
 // Coin Change 2
-// Return the total number of ways to make up the amount
+// Return the total number of ordered ways to make up the amount 
 
+// 9 = 2 + 2 + 5 = 2 + 5 + 2 (considered same order)
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -12,23 +13,19 @@ ll DP[N];
 ll ways(vector<ll> &coins, ll t)
 {
     ll n = coins.size();
-    sort(coins.begin(), coins.end());
-
-    ll m = t + 1;
-    for (int i = 0; i < n; i++) DP[coins[i]] = 1;
-    for (ll i = 1; i < m; i++)
+    fill(DP, DP + n, 0);
+    DP[0] = 1;
+    for (ll j = 0; j < n; j++)
     {
-        for (ll j = 0; j < n; j++)
+        for (ll i = coins[j]; i <= t; i++)
         {
-            if (i > coins[j]) DP[i] =( DP[i] + DP[i - coins[j]]) % MOD;
-            else break;
+            DP[i] = (DP[i] + DP[i - coins[j]]) % MOD;
         }
-        // cout << DP[i] << " ";   
     }
     return DP[t];
 }
 
-signed main()
+int main()
 {
     ll n, t;
     cin >> n >> t;
