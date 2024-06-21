@@ -1,5 +1,5 @@
-// DIJKSTRA's ALGORITHM
-// IMPLEMENTATION (Standard)
+// CSES - SHORTEST ROUTE - 1
+// DIJKSTRA FOR DIRECTED GRAPH
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -17,13 +17,7 @@ ll MAX = 1e9;
 #define mp make_pair
 
 const int N = 1e5 + 5;
-/*
------------------------------------------------------------
-For wieghted graph we use array of vector of pairs
-The first element in pair contains the connected node
-The second element contains the weight of the edge (0 or 1)
------------------------------------------------------------
-*/
+
 int n, m;
 vp graph[N]; 
 bool visited[N];
@@ -71,9 +65,7 @@ int main()
     {
         cin >> a >> b >> c;
         pl x = make_pair(b, c);
-        pl y = make_pair(a, c);
         graph[a].push_back(x);
-        graph[b].push_back(y);
     }
     dijkstra(1);
     for (int i = 1; i <= n; i++) cout << dist[i] << " ";
