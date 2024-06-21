@@ -1,18 +1,14 @@
-// BITMASK DP - 5
-// NUMBER OF SIMPLE PATHS IN A GRAPH
-
-// A simple path in a graph is a sequence of vertices where each vertex is connected by an edge
-// Also no vertex (and thus no edge) is repeated along the path
-
+// BITMASK DP - 6
+// ELEVATOR RIDES (CSES)
 
 #include <bits/stdc++.h>
 using namespace std;
 
 using ll = long long;
-using pl = pair<ll, ll>;
-using vl = vector<long long>;
-using sl = set<ll>;
-using ml = map<ll, ll>;
+using pl = std::pair<ll, ll>;
+using vl = std::vector<long long>;
+using sl = std::set<ll>;
+using ml = std::map<ll, ll>;
 
 ll mod = 1e9 + 7;
 ll MAX = 1e9;
@@ -21,50 +17,39 @@ ll MAX = 1e9;
 #define rev(i,a,b) for(ll i = a;i >= b;i--)
 #define pb push_back
 #define mp make_pair
+#define F first 
+#define S second
 
-// CHECK => mask & (1 << j)
-// SET => mask | (1 << j)
-
-const int N = 15;
-
-ll n, m;
-ll dp[N][1 << N];
-vl graph[N];
-
-int ways(int node, int mask) {
-    if (mask == (1 << n) - 1) return 1;
-    if (dp[node][mask] != -1) return dp[node][mask];
-    
-    int ans = 0;
-    if (__builtin_popcount(mask) >= 2) ans = 1;
-    for (auto v : graph[node]) {
-        if (mask & (1 << v)) continue;
-        ans += ways(v, mask | (1 << v));
-    }
-    dp[node][mask] = ans;
-    return ans;
-}
+ll n, w;
+ll a[20];
+pl DP[1 << 20];
 
 void solve() {
-    cin >> n >> m;
-    memset(dp, -1, sizeof(dp));
-    rep(i, 0, n) graph[i].clear();
-    rep(i, 0, m) {
-        ll u, v;
-        cin >> u >> v;
-        --u, --v; 
-        graph[u].pb(v);
-        graph[v].pb(u);
+    cin >> n >> w;
+    rep(i, 0, n) cin >> a[i];
+
+    rep(i, 0, 1 << n) DP[i] = {n + 1, 0};  
+    DP[0] = {1, 0}; 
+
+    for (int mask = 0; mask < (1 << n); mask++) {
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) continue;
+            pl curr = DP[mask];
+            if (curr.S + a[i] <= w) curr.S += a[i];
+            else {
+                curr.F++;
+                curr.S = a[i];
+            }
+            DP[mask | (1 << i)] = min(DP[mask | (1 << i)], curr);
+        }
     }
-    ll ans = 0;
-    rep(i, 0, n) ans += ways(i, 1 << i);
-    cout << ans / 2 << "\n";
+
+.0
+    cout << DP[(1 << n) - 1].F << endl;
 }
 
 signed main() {
     ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
-    ll t = 1;
-    cin >> t;
-    while (t--) solve();
+    solve();
     return 0;
 }
