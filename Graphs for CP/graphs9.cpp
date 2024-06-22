@@ -1,5 +1,6 @@
 // 0-1 BFS APPLICATION
 // TRADEMILL ROTATION PROBLEM
+
 #include <bits/stdc++.h>
 using namespace std;
 
