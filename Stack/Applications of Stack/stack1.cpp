@@ -1,6 +1,4 @@
-#include <iostream>
-#include <stack>
-
+#include <bits/stdc++.h>
 using namespace std;
 
 int calculate(string s)
@@ -9,36 +7,32 @@ int calculate(string s)
     stack<int> st;
 
     int sign = 1;
-    int current = 0;
+    int curr = 0;
     int ans = 0;
 
     for (int i = 0; i < n; i++)
     {
         if (isdigit(s[i]))
         {
-            current = s[i] - '0';
+            curr = s[i] - '0';
             while (i + 1 < n && isdigit(s[i + 1]))
             {
-                current = (current * 10) + (s[i + 1] - '0');
+                curr = (curr * 10) + (s[i + 1] - '0');
                 i++;
             }
 
-            current = current * sign;
-            ans += current;
-            current = 0;
+            curr = curr * sign;
+            ans += curr;
+            curr = 0;
         }
-        else if (s[i] == '+')
-            sign = 1;
-        else if (s[i] == '-')
-            sign = -1;
-
+        else if (s[i] == '+') sign = 1;
+        else if (s[i] == '-') sign = -1;
         else if (s[i] == '(')
         {
             st.push(ans);
             st.push(sign);
-
             sign = 1;
-            current = 0;
+            curr = 0;
             ans = 0;
         }
 
