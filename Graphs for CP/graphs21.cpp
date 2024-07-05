@@ -1,84 +1,65 @@
-// CYCLE FINDING (CSES)
+// CSES - CYCLE FINDING
 
 #include <bits/stdc++.h>
 using namespace std;
 
-#define ll long long
-#define pl pair<ll, ll>
-#define vl vector<long long>
-#define vp vector<pl>
-#define F first
-#define S second
-#define mp make_pair
+using ll = long long;
+using pl = pair<ll, ll>;
+using vl = vector<long long>;
+using vvl = vector<vl>;
 
-const int N = 2505;
-const ll MAX = 1e18;
+int main()
+{
+    int t = 1;
+    while (t--)
+    {
+        ll n, m;
+        cin >> n >> m;
+        vector<pair<ll, pl>> edges;
+        for(int i = 0; i < m; i++)
+        {
+            ll a, b, c;
+            cin >> a >> b >> c;
+            edges.push_back({c, {a, b}});
+        }
+        vl dis(n + 1, 1e18);
+        vl par(n + 1, 0);
+        dis[1] = 0;
+        ll f = 0;
 
-int n, m;
-vl dist;
-vector<int> parent;
-vector<tuple<int, int, ll>> edges;
-
-bool findNegativeCycle() {
-    dist[1] = 0;
-    int last = -1;
-
-    for (int i = 1; i <= n; i++) {
-        last = -1;
-        for (auto &x: edges) {
-            ll u = get<0>(x);
-            ll v = get<1>(x);
-            ll w = get<2>(x);
-            if (dist[u] != MAX && dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
-                parent[v] = u;
-                last = v;
+        for(int i = 0; i < n; i++)
+        {
+            f = 0;
+            for (auto e : edges)
+            {
+                ll u = e.second.first;
+                ll v = e.second.second;
+                ll w = e.first;
+                if (dis[v] > dis[u] + w)
+                {
+                    dis[v] = dis[u] + w;
+                    par[v] = u;
+                    f = v;
+                }
             }
         }
+        if (!f) cout << "NO" << '\n';
+        else
+        {
+            cout << "YES" << '\n';
+            for (int i = 0; i < n; i++)f = par[f];
+            vl cyc;
+            ll x = f;
+            while (1)
+            {
+                cyc.push_back(x);
+                if (x == f and cyc.size() > 1) break;
+                x = par[x];
+            }
+            reverse(cyc.begin(), cyc.end());
+            for (auto u : cyc) cout << u << " ";
+            cout << '\n';
+        }
     }
-
-    if (last == -1) return false;
-
-    for (int i = 1; i <= n; i++) last = parent[last];
-    parent[0] = last; // Ensure a valid cycle start point.
-    return true;
-}
-
-void printCycle() {
-    int start = parent[0];
-    vl cycle;
-    for (int v = start;; v = parent[v]) {
-        cycle.push_back(v);
-        if (v == start && cycle.size() > 1) break;
-    }
-    reverse(cycle.begin(), cycle.end());
-
-    cout << "YES" << endl;
-    for (int v : cycle) cout << v << " ";
-    cout << endl;
-}
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-
-    cin >> n >> m;
-    dist.resize(n + 1, MAX);
-    parent.resize(n + 1, -1);
-
-    int a, b;
-    ll c;
-    for (int i = 0; i < m; i++) {
-        cin >> a >> b >> c;
-        edges.push_back({a, b, c});
-    }
-
-    if (findNegativeCycle()) {
-        printCycle();
-    } else {
-        cout << "NO" << endl;
-    }
-
     return 0;
 }
