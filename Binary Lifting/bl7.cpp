@@ -1,4 +1,5 @@
-// CSES - PLANET QUERIES-1
+// CSES - PLANET QUERIES-2
+// MINIMUM TRANSITIONS TO REACH ONE NODE TO ANOTHER
 
 #include <bits/stdc++.h>
 using namespace std;

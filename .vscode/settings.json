@@ -59,7 +59,8 @@
   "files.associations": {
     "*.cpp": "cpp",
     "ostream": "cpp",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "iostream": "cpp"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

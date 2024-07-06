@@ -24,23 +24,24 @@ ll MAX = 1e9;
 // CHECK => mask & (1 << j)
 // SET => mask | (1 << j)
 
-const int N = 15;
+const ll N = 20;
 
 ll n, m;
 ll dp[N][1 << N];
 vl graph[N];
 
-int ways(int node, int mask) {
+ll ways(ll node, ll mask) {
     if (mask == (1 << n) - 1) {
         if (node == n - 1) return 1; // Reach the last city (0-based index)
         return 0;
     }
     if (dp[node][mask] != -1) return dp[node][mask];
     
-    int ans = 0;
+    ll ans = 0;
     for (auto v : graph[node]) {
         if (mask & (1 << v)) continue;
         ans += ways(v, mask | (1 << v));
+        ans %= mod;
     }
     dp[node][mask] = ans;
     return ans;
@@ -48,23 +49,23 @@ int ways(int node, int mask) {
 
 void solve() {
     cin >> n >> m;
-    memset(dp, -1, sizeof(dp));
+    rep(i, 0, N) rep(j, 0, 1 << N) dp[i][j] = -1;  // Initialize dp table with -1
     rep(i, 0, n) graph[i].clear();
     rep(i, 0, m) {
         ll u, v;
         cin >> u >> v;
         --u, --v; 
         graph[u].pb(v);
-        graph[v].pb(u);
+        // graph[v].pb(u);
     }
-    int ans = ways(0, 1); // Start from city 1 (0-based index) with mask 1 (first city visited)
+    ll ans = ways(0, 1); // Start from city 1 (0-based index) with mask 1 (first city visited)
     cout << ans << "\n";
 }
 
 signed main() {
     ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
     ll t = 1;
-    cin >> t;
+    // cin >> t;
     while (t--) solve();
     return 0;
 }
