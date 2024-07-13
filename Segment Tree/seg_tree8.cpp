@@ -1,6 +1,8 @@
 // SEGMENT TREE IMPLEMENTATION
 // Kth Smallest Element Queries (0 < x < 10^5 + 1)
 
+// We can use coordinate compression to do for any x, if array size N <= 10^5
+
 #include <bits/stdc++.h>
 #define ll long long
 
